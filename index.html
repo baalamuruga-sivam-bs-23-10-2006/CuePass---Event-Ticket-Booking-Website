@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <title>Movie Tickets, Plays, Sports, Events & Cinemas near you - CuePass</title>
+    
+    <!-- PWA Web App Manifest & Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e293b">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CuePass">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+
+    <!-- Author & Organization Attribution -->
+    <meta name="author" content="Baalamuruga Sivam B S - Founder and CEO of Silicorps">
+    <meta name="description" content="CuePass - Smart Event & Movie Ticket Booking PWA developed by Baalamuruga Sivam B S, Founder and CEO of Silicorps.">
+
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Offline Status Indicator -->
+    <div class="offline-banner" id="offlineBanner" style="display: none;">
+        <i class="fas fa-wifi-slash"></i>
+        <span>You are currently browsing offline. Cached passes & movies are available!</span>
+    </div>
+
+    <!-- PWA Mobile Install Banner Prompt -->
+    <div class="pwa-install-banner" id="pwaInstallBanner" style="display: none;">
+        <div class="install-banner-content">
+            <img src="icon.svg" alt="CuePass App Icon" class="install-app-icon">
+            <div class="install-text">
+                <strong>Install CuePass App</strong>
+                <p>1-Tap fast booking & instant offline tickets</p>
+            </div>
+        </div>
+        <div class="install-action-btns">
+            <button class="btn-pwa-dismiss" id="pwaDismissBtn">Later</button>
+            <button class="btn-pwa-install" id="pwaInstallBtn">Install</button>
+        </div>
+    </div>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-announcement-bar">
+        <div class="nav-container announcement-container">
+            <span>🎉 Download CuePass App & get ₹150 OFF on your first 2 movie bookings! Code: <strong>CUEPASS150</strong></span>
+            <a href="#offers" class="announcement-link">View Offers ›</a>
+        </div>
+    </div>
+
+    <!-- Top Primary Navbar -->
+    <header class="main-header">
+        <div class="top-nav">
+            <div class="nav-container">
+                <!-- Left: Logo & Search Bar -->
+                <div class="nav-left">
+                    <a href="#" class="brand-logo">
+                        <span class="logo-text">cue<span class="logo-accent">pass</span></span>
+                    </a>
+                    <div class="search-box-wrapper">
+                        <div class="search-box">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="searchInput" placeholder="Search for Movies, Events, Plays, Sports and Activities" autocomplete="off">
+                            <button id="clearSearchBtn" class="clear-search-btn" style="display: none;"><i class="fas fa-times"></i></button>
+                        </div>
+                        <!-- Search Dropdown Suggestions -->
+                        <div class="search-suggestions-dropdown" id="searchDropdown">
+                            <div class="suggestions-header">Trending Searches</div>
+                            <div class="suggestion-item" data-search="Spider-Man: Brand New Day">
+                                <i class="fas fa-film"></i>
+                                <div class="sugg-info">
+                                    <span class="sugg-title">Spider-Man: Brand New Day</span>
+                                    <span class="sugg-type">Movies • English, Tamil, Hindi</span>
+                                </div>
+                            </div>
+                            <div class="suggestion-item" data-search="Vishwanath and Sons">
+                                <i class="fas fa-film"></i>
+                                <div class="sugg-info">
+                                    <span class="sugg-title">Vishwanath and Sons</span>
+                                    <span class="sugg-type">Movies • Drama / Family</span>
+                                </div>
+                            </div>
+                            <div class="suggestion-item" data-search="A.R. Rahman">
+                                <i class="fas fa-music"></i>
+                                <div class="sugg-info">
+                                    <span class="sugg-title">A.R. Rahman Live Symphony</span>
+                                    <span class="sugg-type">Live Events • Concert</span>
+                                </div>
+                            </div>
+                            <div class="suggestion-item" data-search="Magudam">
+                                <i class="fas fa-film"></i>
+                                <div class="sugg-info">
+                                    <span class="sugg-title">Magudam</span>
+                                    <span class="sugg-type">Movies • Action / Drama</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: City Picker, Sign In, Hamburger -->
+                <div class="nav-right">
+                    <div class="city-selector" id="citySelectorBtn">
+                        <span id="selectedCity">Chennai</span>
+                        <i class="fas fa-chevron-down city-chevron"></i>
+                    </div>
+                    <button class="btn-signin" id="signInBtn">Sign in</button>
+                    <button class="menu-toggle" id="menuToggleBtn" aria-label="Open Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Sub-Navbar -->
+        <div class="sub-nav">
+            <div class="nav-container sub-nav-container">
+                <ul class="nav-categories">
+                    <li><a href="#movies" class="active">Movies</a></li>
+                    <li><a href="#stream">Stream</a></li>
+                    <li><a href="#events">Events</a></li>
+                    <li><a href="#plays">Plays</a></li>
+                    <li><a href="#sports">Sports</a></li>
+                    <li><a href="#activities">Activities</a></li>
+                </ul>
+                <ul class="nav-utilities">
+                    <li><a href="#listyourshow">ListYourShow</a></li>
+                    <li><a href="#corporates">Corporates</a></li>
+                    <li><a href="#offers" id="navOffersLink">Offers</a></li>
+                    <li><a href="#giftcards">Gift Cards</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Side Drawer Menu for Hamburger -->
+    <div class="side-drawer" id="sideDrawer">
+        <div class="drawer-header">
+            <h3>Hey!</h3>
+            <button class="drawer-close-btn" id="drawerCloseBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-content">
+            <div class="drawer-user-prompt">
+                <i class="far fa-user-circle user-avatar"></i>
+                <div>
+                    <p>Unlock special offers & personalized recommendations</p>
+                    <button class="btn-drawer-login" id="drawerLoginBtn">Login / Register</button>
+                </div>
+            </div>
+            <ul class="drawer-menu-list">
+                <li><a href="#notifications"><i class="far fa-bell"></i> Notifications <span class="badge-new">3 New</span></a></li>
+                <li><a href="#orders" id="drawerOrdersBtn"><i class="fas fa-ticket-alt"></i> Your Orders & Passes</a></li>
+                <li><a href="#stream"><i class="fas fa-tv"></i> Stream Library</a></li>
+                <li><a href="#offers"><i class="fas fa-percent"></i> Offers & Promo Codes</a></li>
+                <li><a href="#giftcards"><i class="fas fa-gift"></i> Gift Cards</a></li>
+                <li><a href="#help"><i class="far fa-question-circle"></i> Help & Support</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    <main class="page-body">
+
+        <!-- Hero Promotional Carousel -->
+        <section class="hero-carousel-section">
+            <div class="carousel-container">
+                <button class="carousel-btn prev-btn" id="carouselPrev"><i class="fas fa-chevron-left"></i></button>
+                <div class="carousel-track" id="carouselTrack">
+                    <div class="carousel-slide active">
+                        <div class="banner-card banner-1">
+                            <div class="banner-info">
+                                <span class="banner-badge">NOW SHOWING</span>
+                                <h2>Spider-Man: Brand New Day</h2>
+                                <p>Experience IMAX 3D with pulse-racing action, cutting-edge CGI, and Dolby Atmos audio.</p>
+                                <div class="banner-cta-group">
+                                    <button class="banner-btn book-movie-trigger" data-title="Spider-Man: Brand New Day" data-genre="Action/Adventure/Sci-Fi" data-rating="★ 8.9/10">Book Tickets</button>
+                                    <button class="banner-trailer-btn open-trailer-btn" data-trailer="https://www.youtube.com/embed/dQw4w9WgXcQ"><i class="fas fa-play"></i> Watch Trailer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="banner-card banner-2">
+                            <div class="banner-info">
+                                <span class="banner-badge">LIVE CONCERT</span>
+                                <h2>A.R. Rahman Live in Concert</h2>
+                                <p>An electrifying musical symphony under the open night sky featuring 100+ musicians.</p>
+                                <div class="banner-cta-group">
+                                    <button class="banner-btn book-movie-trigger" data-title="A.R. Rahman Live Symphony" data-genre="Music/Concert" data-rating="★ 9.8/10">Get Passes</button>
+                                    <button class="banner-trailer-btn"><i class="fas fa-music"></i> Listen Preview</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="banner-card banner-3">
+                            <div class="banner-info">
+                                <span class="banner-badge">COMEDY SPECIAL</span>
+                                <h2>Laugh Fest 2026</h2>
+                                <p>Featuring top international stand-up comedians for a night of non-stop entertainment.</p>
+                                <div class="banner-cta-group">
+                                    <button class="banner-btn book-movie-trigger" data-title="Laugh Fest 2026" data-genre="Comedy/Special" data-rating="★ 9.1/10">Reserve Seats</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-btn next-btn" id="carouselNext"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <!-- Indicators -->
+            <div class="carousel-dots" id="carouselDots">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+                <span class="dot" data-index="2"></span>
+            </div>
+        </section>
+
+        <!-- Quick Filter & Language Filter Bar -->
+        <section class="filter-bar-section">
+            <div class="nav-container">
+                <div class="filter-chips-row">
+                    <div class="filter-group">
+                        <span class="filter-label">Languages:</span>
+                        <button class="filter-chip active" data-filter="all">All</button>
+                        <button class="filter-chip" data-filter="Tamil">Tamil</button>
+                        <button class="filter-chip" data-filter="English">English</button>
+                        <button class="filter-chip" data-filter="Hindi">Hindi</button>
+                        <button class="filter-chip" data-filter="Telugu">Telugu</button>
+                    </div>
+                    <div class="filter-group">
+                        <span class="filter-label">Genres:</span>
+                        <button class="genre-chip active" data-genre="all">All</button>
+                        <button class="genre-chip" data-genre="Action">Action</button>
+                        <button class="genre-chip" data-genre="Drama">Drama</button>
+                        <button class="genre-chip" data-genre="Comedy">Comedy</button>
+                        <button class="genre-chip" data-genre="Sci-Fi">Sci-Fi</button>
+                        <button class="genre-chip" data-genre="Romantic">Romantic</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recommended Movies Section (Matching Screenshot) -->
+        <section class="section-container" id="movies">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Recommended Movies</h2>
+                    <p class="section-subtitle">Top-rated movies playing in cinemas near you</p>
+                </div>
+                <a href="#all-movies" class="see-all-link">See All <i class="fas fa-chevron-right"></i></a>
+            </div>
+
+            <div class="movie-carousel-wrapper">
+                <button class="scroll-arrow-btn left-arrow" id="movieScrollLeft" aria-label="Previous Movies">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <div class="movie-grid" id="movieGrid">
+
+                    <!-- Movie 1: Vishwanath and Sons -->
+                    <div class="movie-card" data-title="Vishwanath and Sons" data-genre="Drama/Family/Romantic" data-lang="Tamil, Telugu" data-rating="👍 141K+ Likes" data-desc="A heartwarming multi-generational family drama celebrating unconditional bond and heritage." data-censor="U" data-duration="2h 25m">
+                        <div class="poster-container">
+                            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500&auto=format&fit=crop&q=80" alt="Vishwanath and Sons Poster" class="poster-img">
+                            <div class="poster-badge badge-likes">
+                                <i class="fas fa-thumbs-up"></i> 141K+ Likes
+                            </div>
+                            <div class="card-overlay-btn">Book Tickets</div>
+                        </div>
+                        <h3 class="movie-title">Vishwanath and Sons</h3>
+                        <p class="movie-genre">Drama/Family/Romantic</p>
+                    </div>
+
+                    <!-- Movie 2: DC -->
+                    <div class="movie-card" data-title="DC" data-genre="Action/Crime/Romantic" data-lang="Tamil, Hindi" data-rating="★ 9.2/10 82.6K+ Votes" data-desc="A gritty crime thriller tracing an undercover cop's descent into a clandestine underworld syndicate." data-censor="UA 16+" data-duration="2h 38m">
+                        <div class="poster-container">
+                            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80" alt="DC Movie Poster" class="poster-img">
+                            <div class="poster-badge badge-rating">
+                                <i class="fas fa-star"></i> 9.2/10 <span class="vote-count">82.6K+ Votes</span>
+                            </div>
+                            <div class="card-overlay-btn">Book Tickets</div>
+                        </div>
+                        <h3 class="movie-title">DC</h3>
+                        <p class="movie-genre">Action/Crime/Romantic</p>
+                    </div>
+
+                    <!-- Movie 3: Magudam -->
+                    <div class="movie-card" data-title="Magudam" data-genre="Action/Drama" data-lang="Tamil" data-rating="★ 7.3/10 1K+ Votes" data-desc="A high-stakes corporate power war for the ultimate industrial throne." data-censor="UA" data-duration="2h 15m">
+                        <div class="poster-container">
+                            <img src="https://images.unsplash.com/photo-1509281373149-e957c6296406?w=500&auto=format&fit=crop&q=80" alt="Magudam Poster" class="poster-img">
+                            <div class="poster-badge badge-rating">
+                                <i class="fas fa-star"></i> 7.3/10 <span class="vote-count">1K+ Votes</span>
+                            </div>
+                            <div class="card-overlay-btn">Book Tickets</div>
+                        </div>
+                        <h3 class="movie-title">Magudam</h3>
+                        <p class="movie-genre">Action/Drama</p>
+                    </div>
+
+                    <!-- Movie 4: Spider-Man: Brand New Day -->
+                    <div class="movie-card" data-title="Spider-Man: Brand New Day" data-genre="Action/Adventure/Sci-Fi" data-lang="English, Tamil, Hindi, Telugu" data-rating="★ 8.9/10 297K+ Votes" data-desc="Peter Parker must defend the multiverse from unprecedented cosmic perils while rebuilding his normal life." data-censor="UA 13+" data-duration="2h 42m">
+                        <div class="poster-container">
+                            <img src="https://images.unsplash.com/photo-1635805737707-575885ab0820?w=500&auto=format&fit=crop&q=80" alt="Spider-Man: Brand New Day Poster" class="poster-img">
+                            <div class="poster-badge badge-rating">
+                                <i class="fas fa-star"></i> 8.9/10 <span class="vote-count">297K+ Votes</span>
+                            </div>
+                            <div class="card-overlay-btn">Book Tickets</div>
+                        </div>
+                        <h3 class="movie-title">Spider-Man: Brand New Day</h3>
+                        <p class="movie-genre">Action/Adventure/Sci-Fi</p>
+                    </div>
+
+                    <!-- Movie 5: The End of Oak Street -->
+                    <div class="movie-card" data-title="The End of Oak Street" data-genre="Action/Mystery/Sci-Fi/Thriller" data-lang="English, Hindi" data-rating="★ 7.6/10 2.5K+ Votes" data-desc="An eerie suburban anomaly unearths prehistoric creatures threatening humanity's existence." data-censor="A" data-duration="2h 10m">
+                        <div class="poster-container">
+                            <img src="https://images.unsplash.com/photo-1574267432553-4b4628081c31?w=500&auto=format&fit=crop&q=80" alt="The End of Oak Street Poster" class="poster-img">
+                            <div class="poster-badge badge-rating">
+                                <i class="fas fa-star"></i> 7.6/10 <span class="vote-count">2.5K+ Votes</span>
+                            </div>
+                            <div class="card-overlay-btn">Book Tickets</div>
+                        </div>
+                        <h3 class="movie-title">The End of Oak Street</h3>
+                        <p class="movie-genre">Action/Mystery/Sci-Fi/Thriller</p>
+                    </div>
+
+                    <!-- Movie 6: Retro Sunset Melodies -->
+                    <div class="movie-card" data-title="Retro Sunset Melodies" data-genre="Musical/Drama/Romantic" data-lang="Tamil, Malayalam" data-rating="★ 8.8/10 54K+ Votes" data-desc="Two passionate indie musicians embark on a cross-country acoustic tour finding love and artistic rebirth." data-censor="U" data-duration="2h 18m">
+                        <div class="poster-container">
+                            <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?w=500&auto=format&fit=crop&q=80" alt="Retro Melodies Poster" class="poster-img">
+                            <div class="poster-badge badge-rating">
+                                <i class="fas fa-star"></i> 8.8/10 <span class="vote-count">54K+ Votes</span>
+                            </div>
+                            <div class="card-overlay-btn">Book Tickets</div>
+                        </div>
+                        <h3 class="movie-title">Retro Sunset Melodies</h3>
+                        <p class="movie-genre">Musical/Drama/Romantic</p>
+                    </div>
+
+                    <!-- Movie 7: Galactic Odyssey -->
+                    <div class="movie-card" data-title="Galactic Odyssey" data-genre="Sci-Fi/Action/Adventure" data-lang="English, Telugu, Hindi" data-rating="👍 89K+ Likes" data-desc="Interstellar pioneers navigate deep space wormholes in search of a habitable sanctuary planet." data-censor="UA" data-duration="2h 35m">
+                        <div class="poster-container">
+                            <img src="https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=500&auto=format&fit=crop&q=80" alt="Galactic Odyssey Poster" class="poster-img">
+                            <div class="poster-badge badge-likes">
+                                <i class="fas fa-thumbs-up"></i> 89K+ Likes
+                            </div>
+                            <div class="card-overlay-btn">Book Tickets</div>
+                        </div>
+                        <h3 class="movie-title">Galactic Odyssey</h3>
+                        <p class="movie-genre">Sci-Fi/Action/Adventure</p>
+                    </div>
+
+                </div>
+
+                <button class="scroll-arrow-btn right-arrow" id="movieScrollRight" aria-label="Next Movies">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Upcoming Movies Section -->
+        <section class="section-container" id="upcoming">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Explore Upcoming Movies</h2>
+                    <p class="section-subtitle">Blockbusters arriving in theaters soon</p>
+                </div>
+                <a href="#upcoming" class="see-all-link">Explore All <i class="fas fa-chevron-right"></i></a>
+            </div>
+
+            <div class="upcoming-grid">
+                <div class="upcoming-card">
+                    <div class="upcoming-poster">
+                        <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&auto=format&fit=crop&q=80" alt="Avatar: Fire & Ash">
+                        <div class="release-date-badge">28 AUG 2026</div>
+                    </div>
+                    <h4>Avatar: Fire & Ash</h4>
+                    <p>Action • Sci-Fi • IMAX 3D</p>
+                    <button class="btn-remind"><i class="far fa-bell"></i> Remind Me (34.2K)</button>
+                </div>
+                <div class="upcoming-card">
+                    <div class="upcoming-poster">
+                        <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500&auto=format&fit=crop&q=80" alt="Midnight Shadows">
+                        <div class="release-date-badge">04 SEP 2026</div>
+                    </div>
+                    <h4>Midnight Shadows</h4>
+                    <p>Horror • Supernatural Thriller</p>
+                    <button class="btn-remind"><i class="far fa-bell"></i> Remind Me (18.6K)</button>
+                </div>
+                <div class="upcoming-card">
+                    <div class="upcoming-poster">
+                        <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=500&auto=format&fit=crop&q=80" alt="Thunderbolts*">
+                        <div class="release-date-badge">18 SEP 2026</div>
+                    </div>
+                    <h4>Thunderbolts*</h4>
+                    <p>Superhero • Action • Comedy</p>
+                    <button class="btn-remind"><i class="far fa-bell"></i> Remind Me (95.1K)</button>
+                </div>
+                <div class="upcoming-card">
+                    <div class="upcoming-poster">
+                        <img src="https://images.unsplash.com/photo-1506157786151-b8491531f063?w=500&auto=format&fit=crop&q=80" alt="Royal Symphony">
+                        <div class="release-date-badge">02 OCT 2026</div>
+                    </div>
+                    <h4>Royal Symphony</h4>
+                    <p>Period Historical • Action</p>
+                    <button class="btn-remind"><i class="far fa-bell"></i> Remind Me (41.8K)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Events Section -->
+        <section class="section-container" id="events">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">The Best of Live Events</h2>
+                    <p class="section-subtitle">Step out and create memories with live shows</p>
+                </div>
+                <a href="#all-events" class="see-all-link">See All <i class="fas fa-chevron-right"></i></a>
+            </div>
+
+            <div class="events-category-grid">
+                <div class="event-cat-card cat-music" data-category="Concert">
+                    <i class="fas fa-music cat-icon"></i>
+                    <h4>Music Concerts</h4>
+                    <p>30+ Live Concerts</p>
+                </div>
+                <div class="event-cat-card cat-comedy" data-category="Comedy">
+                    <i class="fas fa-microphone-alt cat-icon"></i>
+                    <h4>Standup Comedy</h4>
+                    <p>25+ Live Gigs</p>
+                </div>
+                <div class="event-cat-card cat-theater" data-category="Theater">
+                    <i class="fas fa-theater-masks cat-icon"></i>
+                    <h4>Plays & Theater</h4>
+                    <p>15+ Plays</p>
+                </div>
+                <div class="event-cat-card cat-sports" data-category="Sports">
+                    <i class="fas fa-futbol cat-icon"></i>
+                    <h4>Live Sports</h4>
+                    <p>10+ Stadium Matches</p>
+                </div>
+                <div class="event-cat-card cat-workshops" data-category="Workshops">
+                    <i class="fas fa-palette cat-icon"></i>
+                    <h4>Workshops & Talks</h4>
+                    <p>40+ Interactive Sessions</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stream Premiere Banner Section -->
+        <section class="stream-banner-section" id="stream">
+            <div class="section-container">
+                <div class="stream-banner-content">
+                    <div class="stream-logo-badge">
+                        <i class="fas fa-play-circle"></i>
+                        <span>STREAM</span>
+                    </div>
+                    <h3 class="stream-title">Endless Entertainment. Anytime. Anywhere!</h3>
+                    <p class="stream-desc">Rent & buy blockbusters right from your home theatre in ultra high-definition 4K HDR.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Floating Right Quick-Action Dock (Matching Screenshot) -->
+    <aside class="floating-action-dock" aria-label="Quick Actions">
+        <button class="dock-btn" title="Notifications" id="dockNotif"><i class="fas fa-bell"></i></button>
+        <button class="dock-btn" title="Booking Calendar" id="dockCalendar"><i class="fas fa-calendar-alt"></i></button>
+        <button class="dock-btn" title="Saved Wishlist" id="dockHeart"><i class="fas fa-heart"></i></button>
+        <button class="dock-btn dock-btn-help" title="CuePass Help & Support" id="dockHelp">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+    </aside>
+
+    <!-- PWA Mobile Bottom App Navigation Bar (Only on Mobile/Tablets) -->
+    <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+        <a href="#movies" class="bnav-item active" id="bnavMovies">
+            <i class="fas fa-film"></i>
+            <span>Movies</span>
+        </a>
+        <a href="#events" class="bnav-item" id="bnavEvents">
+            <i class="fas fa-star"></i>
+            <span>Events</span>
+        </a>
+        <a href="#search" class="bnav-item" id="bnavSearch">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
+        </a>
+        <a href="#orders" class="bnav-item" id="bnavOrders">
+            <i class="fas fa-ticket-alt"></i>
+            <span>My Passes</span>
+        </a>
+        <a href="#profile" class="bnav-item" id="bnavProfile">
+            <i class="fas fa-user-circle"></i>
+            <span>Account</span>
+        </a>
+    </nav>
+
+    <!-- Saved Offline Orders & Passes Modal -->
+    <div class="modal-overlay" id="myOrdersModal">
+        <div class="modal-card orders-modal-card">
+            <div class="modal-header">
+                <h3><i class="fas fa-ticket-alt"></i> Your Booked Passes (Offline Ready)</h3>
+                <button class="modal-close-btn" id="closeOrdersModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="orders-body" id="ordersListContainer">
+                <!-- Orders will dynamically populate from localStorage -->
+            </div>
+        </div>
+    </div>
+
+    <!-- City Selection Modal -->
+    <div class="modal-overlay" id="cityModal">
+        <div class="modal-card city-modal-card">
+            <div class="modal-header">
+                <h3>Select Your City</h3>
+                <button class="modal-close-btn" id="closeCityModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="city-search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="citySearchInput" placeholder="Search for your city">
+            </div>
+            <div class="popular-cities-title">Popular Cities</div>
+            <div class="cities-grid" id="citiesGrid">
+                <div class="city-item" data-city="Chennai">
+                    <div class="city-icon"><i class="fas fa-landmark"></i></div>
+                    <span>Chennai</span>
+                </div>
+                <div class="city-item" data-city="Mumbai">
+                    <div class="city-icon"><i class="fas fa-city"></i></div>
+                    <span>Mumbai</span>
+                </div>
+                <div class="city-item" data-city="Delhi-NCR">
+                    <div class="city-icon"><i class="fas fa-monument"></i></div>
+                    <span>Delhi-NCR</span>
+                </div>
+                <div class="city-item" data-city="Bengaluru">
+                    <div class="city-icon"><i class="fas fa-laptop-code"></i></div>
+                    <span>Bengaluru</span>
+                </div>
+                <div class="city-item" data-city="Hyderabad">
+                    <div class="city-icon"><i class="fas fa-archway"></i></div>
+                    <span>Hyderabad</span>
+                </div>
+                <div class="city-item" data-city="Kolkata">
+                    <div class="city-icon"><i class="fas fa-tram"></i></div>
+                    <span>Kolkata</span>
+                </div>
+                <div class="city-item" data-city="Kochi">
+                    <div class="city-icon"><i class="fas fa-ship"></i></div>
+                    <span>Kochi</span>
+                </div>
+                <div class="city-item" data-city="Ahmedabad">
+                    <div class="city-icon"><i class="fas fa-building"></i></div>
+                    <span>Ahmedabad</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign In Modal -->
+    <div class="modal-overlay" id="signInModal">
+        <div class="modal-card signin-modal-card">
+            <div class="modal-header">
+                <h3>Get Started with CuePass</h3>
+                <button class="modal-close-btn" id="closeSignInModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="signin-body">
+                <p class="signin-subtitle">Please enter your Mobile Number or Email to proceed</p>
+                <div class="input-group">
+                    <span class="country-prefix">+91</span>
+                    <input type="tel" id="mobileNumberInput" placeholder="Continue with mobile number" maxlength="10">
+                </div>
+                <button class="btn-continue" id="continueAuthBtn">Continue</button>
+                <div class="divider"><span>OR</span></div>
+                <button class="btn-social btn-google"><i class="fab fa-google"></i> Continue with Google</button>
+                <button class="btn-social btn-apple"><i class="fab fa-apple"></i> Continue with Apple</button>
+                <p class="terms-text">I agree to the <a href="#">Terms & Conditions</a> & <a href="#">Privacy Policy</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Interactive Seat Selection & Ticket Booking Modal -->
+    <div class="modal-overlay" id="bookingModal">
+        <div class="modal-card booking-modal-card full-booking-modal">
+            <div class="modal-header">
+                <div>
+                    <h3 id="bookingMovieTitle">Movie Title</h3>
+                    <div class="movie-meta-subrow">
+                        <span id="bookingMovieCensor" class="meta-tag">UA 16+</span>
+                        <span id="bookingMovieDuration" class="meta-tag">2h 35m</span>
+                        <span id="bookingMovieLang" class="meta-tag">Tamil, Telugu, Hindi</span>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closeBookingModal"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="booking-wizard-content">
+                
+                <!-- Cinema & Showtimes Selection -->
+                <div class="wizard-step step-cinema">
+                    <div class="cinema-heading-row">
+                        <h4><i class="fas fa-map-marker-alt"></i> Select Theater & Showtime</h4>
+                        <div class="date-selector-pills" id="datePills">
+                            <button class="date-pill active">TODAY, 17 AUG</button>
+                            <button class="date-pill">TOMORROW, 18 AUG</button>
+                            <button class="date-pill">WED, 19 AUG</button>
+                        </div>
+                    </div>
+
+                    <div class="cinema-hall-card">
+                        <div class="cinema-hall-title">
+                            <strong>PVR: Express Avenue, Royapettah (Audi 3 - 4K Laser Dolby Atmos)</strong>
+                            <span class="m-ticket-badge"><i class="fas fa-mobile-alt"></i> M-Ticket Available</span>
+                        </div>
+                        <div class="showtimes-row" id="showtimeSlots">
+                            <button class="time-slot-btn">10:30 AM <span class="slot-type">4K 3D</span></button>
+                            <button class="time-slot-btn active">02:15 PM <span class="slot-type">Dolby Atmos</span></button>
+                            <button class="time-slot-btn">06:45 PM <span class="slot-type">IMAX 3D</span></button>
+                            <button class="time-slot-btn">10:00 PM <span class="slot-type">Dolby Atmos</span></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Cinema Seat Matrix -->
+                <div class="wizard-step step-seats">
+                    <div class="screen-indicator-wrapper">
+                        <div class="screen-curve"></div>
+                        <span class="screen-text">All eyes this way please! Screen in direction</span>
+                    </div>
+
+                    <!-- Seat Matrix -->
+                    <div class="seat-layout-container">
+                        <!-- VIP Recliner (₹350) -->
+                        <div class="seat-tier">
+                            <div class="tier-label">VIP RECLINER - ₹350</div>
+                            <div class="seat-row" data-row="A">
+                                <span class="row-letter">A</span>
+                                <div class="seat-units">
+                                    <button class="seat" data-seat="A1">1</button>
+                                    <button class="seat" data-seat="A2">2</button>
+                                    <button class="seat occupied" data-seat="A3">3</button>
+                                    <button class="seat occupied" data-seat="A4">4</button>
+                                    <div class="seat-gap"></div>
+                                    <button class="seat selected" data-seat="A5">5</button>
+                                    <button class="seat selected" data-seat="A6">6</button>
+                                    <button class="seat" data-seat="A7">7</button>
+                                    <button class="seat" data-seat="A8">8</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Premium (₹220) -->
+                        <div class="seat-tier">
+                            <div class="tier-label">PREMIUM - ₹220</div>
+                            <div class="seat-row" data-row="B">
+                                <span class="row-letter">B</span>
+                                <div class="seat-units">
+                                    <button class="seat" data-seat="B1">1</button>
+                                    <button class="seat" data-seat="B2">2</button>
+                                    <button class="seat" data-seat="B3">3</button>
+                                    <button class="seat occupied" data-seat="B4">4</button>
+                                    <div class="seat-gap"></div>
+                                    <button class="seat" data-seat="B5">5</button>
+                                    <button class="seat" data-seat="B6">6</button>
+                                    <button class="seat" data-seat="B7">7</button>
+                                    <button class="seat" data-seat="B8">8</button>
+                                </div>
+                            </div>
+                            <div class="seat-row" data-row="C">
+                                <span class="row-letter">C</span>
+                                <div class="seat-units">
+                                    <button class="seat occupied" data-seat="C1">1</button>
+                                    <button class="seat occupied" data-seat="C2">2</button>
+                                    <button class="seat" data-seat="C3">3</button>
+                                    <button class="seat" data-seat="C4">4</button>
+                                    <div class="seat-gap"></div>
+                                    <button class="seat" data-seat="C5">5</button>
+                                    <button class="seat" data-seat="C6">6</button>
+                                    <button class="seat" data-seat="C7">7</button>
+                                    <button class="seat" data-seat="C8">8</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Executive (₹160) -->
+                        <div class="seat-tier">
+                            <div class="tier-label">EXECUTIVE - ₹160</div>
+                            <div class="seat-row" data-row="D">
+                                <span class="row-letter">D</span>
+                                <div class="seat-units">
+                                    <button class="seat" data-seat="D1">1</button>
+                                    <button class="seat" data-seat="D2">2</button>
+                                    <button class="seat" data-seat="D3">3</button>
+                                    <button class="seat" data-seat="D4">4</button>
+                                    <div class="seat-gap"></div>
+                                    <button class="seat" data-seat="D5">5</button>
+                                    <button class="seat" data-seat="D6">6</button>
+                                    <button class="seat occupied" data-seat="D7">7</button>
+                                    <button class="seat occupied" data-seat="D8">8</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seat Legend -->
+                    <div class="seat-legend-row">
+                        <div class="legend-item"><span class="legend-box available"></span> Available</div>
+                        <div class="legend-item"><span class="legend-box selected"></span> Selected</div>
+                        <div class="legend-item"><span class="legend-box occupied"></span> Sold</div>
+                    </div>
+                </div>
+
+                <!-- Food & Snacks Add-on -->
+                <div class="wizard-step step-food">
+                    <div class="food-heading-row">
+                        <h4>🍿 Grab a Bite (Save up to 20%)</h4>
+                    </div>
+                    <div class="food-items-grid">
+                        <div class="food-item-card">
+                            <div class="food-info">
+                                <strong>Large Caramel Popcorn (90g)</strong>
+                                <span>₹250</span>
+                            </div>
+                            <button class="btn-add-food" data-item="Popcorn" data-price="250">+ ADD</button>
+                        </div>
+                        <div class="food-item-card">
+                            <div class="food-info">
+                                <strong>Cheese Nachos with Salsa Dip</strong>
+                                <span>₹220</span>
+                            </div>
+                            <button class="btn-add-food" data-item="Nachos" data-price="220">+ ADD</button>
+                        </div>
+                        <div class="food-item-card">
+                            <div class="food-info">
+                                <strong>Pepsi Chilled Can (300ml)</strong>
+                                <span>₹120</span>
+                            </div>
+                            <button class="btn-add-food" data-item="Pepsi" data-price="120">+ ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Promo Code Apply -->
+                <div class="wizard-step step-promo">
+                    <div class="promo-box">
+                        <i class="fas fa-tag promo-icon"></i>
+                        <input type="text" id="promoCodeInput" placeholder="Apply Promo Code (Try: CUEPASS50)">
+                        <button id="applyPromoBtn" class="btn-apply-promo">Apply</button>
+                    </div>
+                    <div id="promoMessage" class="promo-msg"></div>
+                </div>
+
+                <!-- Checkout Summary -->
+                <div class="booking-checkout-footer">
+                    <div class="checkout-details">
+                        <div class="selected-seats-info">Seats: <strong id="selectedSeatsLabel">A5, A6</strong> (2 Tickets)</div>
+                        <div class="total-payable-amount">Total: <strong id="checkoutTotalAmount">₹700</strong></div>
+                    </div>
+                    <button class="btn-checkout-pay" id="proceedToPayBtn">Pay & Generate Tickets ›</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Confirmed Ticket Pass Receipt Modal -->
+    <div class="modal-overlay" id="ticketPassModal">
+        <div class="modal-card ticket-receipt-card">
+            <div class="ticket-receipt-header">
+                <div class="receipt-brand">cue<span class="logo-accent">pass</span> PASS</div>
+                <button class="modal-close-btn" id="closeTicketPassModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="ticket-receipt-body">
+                <div class="success-banner">
+                    <i class="fas fa-check-circle"></i>
+                    <h4>Booking Confirmed!</h4>
+                    <p>Booking ID: <strong id="receiptBookingId">#CUE-894231</strong></p>
+                </div>
+
+                <div class="receipt-movie-title" id="receiptMovieTitle">Spider-Man: Brand New Day</div>
+                <div class="receipt-details-grid">
+                    <div>
+                        <span>CINEMA</span>
+                        <strong id="receiptCinema">PVR: Express Avenue</strong>
+                    </div>
+                    <div>
+                        <span>SCREEN</span>
+                        <strong>Audi 3 (4K Dolby)</strong>
+                    </div>
+                    <div>
+                        <span>DATE & TIME</span>
+                        <strong id="receiptDateTime">Today | 02:15 PM</strong>
+                    </div>
+                    <div>
+                        <span>SEATS</span>
+                        <strong id="receiptSeats">A5, A6</strong>
+                    </div>
+                </div>
+
+                <div class="receipt-qr-section">
+                    <div class="qr-placeholder">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <p class="qr-instruction">Scan this QR Code at the cinema turnstile for direct entry</p>
+                </div>
+
+                <div class="receipt-amount-row">
+                    <span>Total Amount Paid:</span>
+                    <strong id="receiptTotalPaid">₹700</strong>
+                </div>
+
+                <div class="receipt-action-btns">
+                    <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print Ticket</button>
+                    <button class="btn-done" id="doneTicketBtn">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentic Footer (BookMyShow Style) -->
+    <footer class="main-footer">
+        <div class="footer-cta-banner">
+            <div class="nav-container footer-cta-container">
+                <div class="cta-left">
+                    <i class="fas fa-bullhorn cta-icon"></i>
+                    <div>
+                        <h4>List your Show</h4>
+                        <p>Got a show, event, activity or a great experience? Partner with us & get listed on CuePass</p>
+                    </div>
+                </div>
+                <a href="#contact" class="btn-contact-today">Contact today!</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom-info">
+            <div class="nav-container">
+                <div class="footer-brand-row">
+                    <div class="footer-line"></div>
+                    <span class="footer-logo">cue<span class="logo-accent">pass</span></span>
+                    <div class="footer-line"></div>
+                </div>
+
+                <div class="footer-social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+
+                <p class="copyright-text">
+                    Copyright 2026 © CuePass Entertainment Pvt. Ltd. All Rights Reserved.<br>
+                    Crafted & Developed by <strong>Baalamuruga Sivam B S</strong> (Founder & CEO of <strong>Silicorps</strong>).
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

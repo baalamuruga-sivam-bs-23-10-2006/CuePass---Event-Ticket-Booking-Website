@@ -1,0 +1,41 @@
+{
+  "name": "CuePass - Smart Event & Movie Ticket Booking",
+  "short_name": "CuePass",
+  "description": "Book movie tickets, live concerts, standup comedy, plays and sports near you with CuePass.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e293b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Book Movies",
+      "short_name": "Movies",
+      "description": "Browse and book movies playing near you",
+      "url": "./index.html#movies",
+      "icons": [{ "src": "icon.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Live Events",
+      "short_name": "Events",
+      "description": "Explore concerts, comedy and live events",
+      "url": "./index.html#events",
+      "icons": [{ "src": "icon.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Your Orders",
+      "short_name": "Orders",
+      "description": "View your booked digital entry passes",
+      "url": "./index.html#orders",
+      "icons": [{ "src": "icon.svg", "sizes": "192x192" }]
+    }
+  ]
+}

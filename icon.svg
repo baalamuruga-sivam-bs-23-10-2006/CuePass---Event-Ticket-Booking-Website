@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <defs>
+        <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1e293b"/>
+            <stop offset="100%" stop-color="#0f172a"/>
+        </linearGradient>
+        <linearGradient id="ticketGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f84464"/>
+            <stop offset="100%" stop-color="#db2777"/>
+        </linearGradient>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#f84464" flood-opacity="0.45"/>
+        </filter>
+    </defs>
+    <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
+    <!-- Ticket Icon in Center -->
+    <g transform="translate(106, 126)" filter="url(#glow)">
+        <!-- Ticket Base with Notches -->
+        <path d="M 30 0 
+                 H 200 
+                 A 28 28 0 0 0 256 0 
+                 H 270 
+                 A 30 30 0 0 1 300 30 
+                 V 230 
+                 A 30 30 0 0 1 270 260 
+                 H 256 
+                 A 28 28 0 0 0 200 260 
+                 H 30 
+                 A 30 30 0 0 1 0 230 
+                 V 30 
+                 A 30 30 0 0 1 30 0 Z" 
+              fill="url(#ticketGrad)"/>
+        <!-- Perforation Line -->
+        <line x1="228" y1="10" x2="228" y2="250" stroke="#ffffff" stroke-width="4" stroke-dasharray="10 8" opacity="0.6"/>
+        <!-- Star In Ticket -->
+        <polygon points="100,50 115,95 162,95 124,123 138,168 100,140 62,168 76,123 38,95 85,95" fill="#ffffff" opacity="0.95"/>
+        <!-- Barcode on Stub -->
+        <rect x="250" y="45" width="6" height="170" rx="3" fill="#ffffff" opacity="0.9"/>
+        <rect x="264" y="45" width="4" height="170" rx="2" fill="#ffffff" opacity="0.9"/>
+        <rect x="274" y="45" width="10" height="170" rx="4" fill="#ffffff" opacity="0.9"/>
+    </g>
+</svg>
